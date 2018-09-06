@@ -63,10 +63,10 @@
 		//Pull the shader code from the html
 		var shaderCode = document.getElementById("fragShader").innerHTML;
 
-		var textureURL = "render.jpg"
+		var textureURL = "https://raw.githubusercontent.com/CharlesFoxW/WebGL_Projects/master/Three.js_shaders/render.jpg"
 		THREE.ImageUtils.crossOrigin = '';//Allows us to load an external image
 
-		var normalURL = "normal.jpg"
+		var normalURL = "https://raw.githubusercontent.com/CharlesFoxW/WebGL_Projects/master/Three.js_shaders/normals.jpg"
 		var normal = THREE.ImageUtils.loadTexture(normalURL);
 
 		//Load in the texture
