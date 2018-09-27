@@ -1,0 +1,79 @@
+<html>
+<head>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r71/three.min.js"></script>
+	<style>
+		body { margin: 0; }
+	</style>
+</heda>
+<body>
+
+	<script id="fragShader" type="shader-code">
+
+		uniform float time;
+		uniform vec2 resolution;
+		void main()
+		{
+			vec2  r = resolution.xy, p = gl_FragCoord.xy - r * 0.5;
+			float d = length(p) / r.y,
+						c = 1.0,
+						x = pow(d, 0.1),
+						y = atan(p.x, p.y) / 6.28;
+
+			for (float i = 0.; i < 3.0; ++i) {
+					c = min(c, length(fract(vec2(x - time*i*0.005, fract(y + i*0.125)*0.5)*20.0) * 2.0 - 1.0));
+			}
+			float color = d + 20.0 * c * d * d * (0.6 - d);
+			gl_FragColor = vec4(color/3.0, color/1.5, color/1.2, 1.0);
+		}
+
+	</script>
+
+	<script>
+
+		var scene;
+		var camera;
+		var renderer;
+
+		function scene_setup(){
+			//This is all code needed to set up a basic ThreeJS scene
+
+			//First we initialize the scene and our camera
+			scene = new THREE.Scene();
+			camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+			//We create the WebGL renderer and add it to the document
+			renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
+		}
+
+		scene_setup();
+
+
+		var shaderCode = document.getElementById("fragShader").innerHTML;
+
+		var uniforms = {};
+		uniforms.time = {type:'f',value:0.1};
+		uniforms.resolution = {type:'v2',value:new THREE.Vector2(window.innerWidth,window.innerHeight)};
+
+		//Create an object to apply the shaders to
+		var material = new THREE.ShaderMaterial({uniforms:uniforms, fragmentShader:shaderCode})
+		var geometry = new THREE.PlaneGeometry( 10, 10 );
+		var sprite = new THREE.Mesh( geometry,material );
+		scene.add( sprite );
+		sprite.position.z = -1;
+
+		const clock = new THREE.Clock();
+
+		//Render everything!
+		function render() {
+			const elapsed = clock.getElapsedTime();
+			uniforms.time.value = elapsed;
+			requestAnimationFrame( render );
+			renderer.render( scene, camera );
+		}
+		render();
+
+	</script>
+</body>
+</html>
